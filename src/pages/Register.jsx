@@ -99,8 +99,8 @@ export default function Register() {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 h-full overflow-y-auto flex items-center justify-center p-8 bg-background">
-        <div className="w-full max-w-md animate-fade-in py-12">
+      <div className="w-full lg:w-1/2 h-full overflow-y-auto flex justify-center p-8 bg-background">
+        <div className="w-full max-w-md animate-fade-in py-12 my-auto">
           {tenantError && (
             <div className="bg-error/10 text-error p-3 rounded-lg mb-6 text-sm text-center">
               {tenantError}
