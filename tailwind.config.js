@@ -68,7 +68,7 @@ export default {
         background: '#F3F4F6',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'system-ui', '-apple-system', 'sans-serif'],
       },
       fontSize: {
         'display-lg': ['48px', { lineHeight: '56px', fontWeight: '700', letterSpacing: '-0.02em' }],
@@ -94,10 +94,16 @@ export default {
         'gutter': '24px',
       },
       boxShadow: {
-        'card': '0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px rgba(0, 0, 0, 0.06)',
-        'card-hover': '0px 4px 6px rgba(0, 0, 0, 0.1), 0px 2px 4px rgba(0, 0, 0, 0.06)',
-        'dropdown': '0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 4px 6px rgba(0, 0, 0, 0.05)',
+        'card': '0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 0 3px rgba(0,0,0,0.02)',
+        'card-hover': '0 12px 30px -4px rgba(0, 0, 0, 0.08), 0 0 4px rgba(0,0,0,0.04)',
+        'dropdown': '0 20px 40px -10px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0,0,0,0.03)',
+        'glow-primary': '0 0 20px -5px rgba(245, 158, 11, 0.4)',
+        'glow-success': '0 0 20px -5px rgba(16, 185, 129, 0.4)',
       },
+      backgroundImage: {
+        'glass-gradient': 'linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 100%)',
+        'primary-gradient': 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+      }
     },
   },
   plugins: [],

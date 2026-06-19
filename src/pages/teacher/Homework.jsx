@@ -19,10 +19,6 @@ export default function Homework() {
     dueDate: ''
   });
 
-  useEffect(() => {
-    fetchHomework();
-  }, []);
-
   const fetchHomework = async () => {
     setLoading(true);
     try {
@@ -36,6 +32,12 @@ export default function Homework() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchHomework();
+  }, []);
+
+
 
   const handleCreate = async (e) => {
     e.preventDefault();

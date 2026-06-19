@@ -274,8 +274,8 @@ export default function Teachers() {
                 </div>
                 <div className="flex items-center justify-between text-body-md">
                   <span className="text-on-surface-variant">Subjects:</span>
-                  <span className="truncate max-w-[150px] font-medium" title={teacher.subjects.join(', ')}>
-                    {teacher.subjects.join(', ') || 'N/A'}
+                  <span className="truncate max-w-[150px] font-medium" title={teacher.subjects?.join(', ')}>
+                    {teacher.subjects?.join(', ') || 'N/A'}
                   </span>
                 </div>
               </div>
@@ -327,7 +327,7 @@ export default function Teachers() {
                   </td>
                   <td>{t.employeeId}</td>
                   <td>{t.email}</td>
-                  <td>{t.subjects.join(', ') || 'N/A'}</td>
+                  <td>{t.subjects?.join(', ') || 'N/A'}</td>
                   <td>
                     <span className="chip bg-surface-container text-on-surface-variant">{t.classTeacherOf}</span>
                   </td>
@@ -621,7 +621,7 @@ export default function Teachers() {
                 </div>
                 <div className="col-span-2">
                   <p className="text-sm text-gray-500">Subjects Handled</p>
-                  <p className="font-medium text-gray-800">{viewTeacher.subjects.join(', ') || 'None'}</p>
+                  <p className="font-medium text-gray-800">{viewTeacher.subjects?.join(', ') || 'None'}</p>
                 </div>
               </div>
               <div className="flex justify-end gap-2 pt-4 border-t border-gray-100">

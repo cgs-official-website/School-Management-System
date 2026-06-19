@@ -15,10 +15,6 @@ export default function Leaves() {
   const [remarks, setRemarks] = useState('');
   const [actionType, setActionType] = useState('Approve'); // Approve or Reject
 
-  useEffect(() => {
-    fetchLeaves();
-  }, []);
-
   const fetchLeaves = async () => {
     setLoading(true);
     try {
@@ -32,6 +28,12 @@ export default function Leaves() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchLeaves();
+  }, []);
+
+
 
   const handleAction = async (e) => {
     e.preventDefault();

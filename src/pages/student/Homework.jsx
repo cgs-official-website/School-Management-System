@@ -4,6 +4,7 @@ import { db } from '../../lib/firebase';
 import { useAuth } from '../../context/AuthContext';
 import Icon from '../../components/common/Icon';
 import Modal from '../../components/common/Modal';
+import toast from 'react-hot-toast';
 
 const subjectColors = { 
   Maths: 'bg-blue-50 text-blue-700 border-blue-100', 
@@ -191,7 +192,7 @@ export default function StudentHomework() {
                     const file = e.target.files[0];
                     if (file) {
                       if (file.type !== 'application/pdf') {
-                        alert('Only PDF files are allowed!');
+                        toast.error('Only PDF files are allowed!');
                         e.target.value = null;
                         setFileAttached(null);
                         return;

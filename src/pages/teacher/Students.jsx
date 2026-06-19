@@ -4,6 +4,7 @@ import { db } from '../../lib/firebase';
 import { useAuth } from '../../context/AuthContext';
 import Icon from '../../components/common/Icon';
 import Modal from '../../components/common/Modal';
+import toast from 'react-hot-toast';
 
 export default function Students() {
   const [studentList, setStudentList] = useState([]);
@@ -23,6 +24,14 @@ export default function Students() {
   const [editError, setEditError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // New states for onboarding options
+  const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
+  const [isShareLinkOpen, setIsShareLinkOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
+  const [csvFile, setCsvFile] = useState(null);
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState('');
 
   const validateLoginEmail = (email) => email.trim().toLowerCase().endsWith('@gmail.com');
   const emailError = 'Please enter a proper professional mail id ending with @gmail.com';
@@ -82,6 +91,71 @@ export default function Students() {
       console.error('Error adding student:', err);
       setAddError(err.message || 'Error adding student');
     }
+  };
+
+  const handleImportCSV = async (e) => {
+    e.preventDefault();
+    if (!csvFile) {
+      setImportError('Please select a CSV file to upload.');
+      return;
+    }
+    setImporting(true);
+    setImportError('');
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const text = event.target.result;
+        const rows = text.split('\n').map(row => row.trim()).filter(row => row);
+        
+        if (rows.length <= 1) {
+          throw new Error('CSV file appears to be empty or missing data rows.');
+        }
+
+        const headers = rows[0].split(',').map(h => h.trim().toLowerCase());
+        
+        // expected headers: name, email, password
+        const nameIdx = headers.indexOf('name');
+        const emailIdx = headers.indexOf('email');
+        const passIdx = headers.indexOf('password');
+
+        if (nameIdx === -1 || emailIdx === -1 || passIdx === -1) {
+          throw new Error('CSV must contain "name", "email", and "password" columns.');
+        }
+
+        for (let i = 1; i < rows.length; i++) {
+          const cols = rows[i].split(',').map(c => c.trim());
+          const sName = cols[nameIdx];
+          const sEmail = cols[emailIdx];
+          const sPass = cols[passIdx];
+
+          if (sName && sEmail && sPass) {
+            await registerUser({
+              email: sEmail,
+              password: sPass,
+              name: sName,
+              roleToSet: 'student',
+              schoolId: school.id
+            });
+          }
+        }
+        
+        fetchStudents();
+        setIsImportOpen(false);
+        setCsvFile(null);
+        toast.success('CSV Import Successful!');
+      } catch (err) {
+        console.error('CSV Import Error:', err);
+        setImportError(err.message || 'Failed to import CSV data.');
+      } finally {
+        setImporting(false);
+      }
+    };
+    reader.onerror = () => {
+      setImportError('Failed to read file.');
+      setImporting(false);
+    };
+    reader.readAsText(csvFile);
   };
 
   const handleStartEdit = (student) => {
@@ -177,9 +251,47 @@ export default function Students() {
           <h1 className="page-header">Class Roster</h1>
           <p className="page-subtitle">Manage enrolled students.</p>
         </div>
-        <button className="btn-primary" onClick={() => setIsAddOpen(true)}>
-          <Icon name="add" size={18} />Add Student
-        </button>
+        <div className="relative">
+          <button className="btn-primary" onClick={() => setIsAddMenuOpen(!isAddMenuOpen)}>
+            <Icon name="add" size={18} />Add Students
+            <Icon name={isAddMenuOpen ? "expand_less" : "expand_more"} size={18} />
+          </button>
+          
+          {isAddMenuOpen && (
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-card border border-outline-variant/20 z-50 overflow-hidden animate-fade-in">
+              <button 
+                onClick={() => { setIsAddOpen(true); setIsAddMenuOpen(false); }}
+                className="w-full px-4 py-3 text-left hover:bg-surface-container-low transition-colors border-b border-outline-variant/10 flex items-center gap-3"
+              >
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary"><Icon name="person_add" size={18} /></div>
+                <div>
+                  <div className="text-body-md font-semibold text-gray-800">Add Manually</div>
+                  <div className="text-label-sm text-gray-500">Fill a form to add one</div>
+                </div>
+              </button>
+              <button 
+                onClick={() => { setIsShareLinkOpen(true); setIsAddMenuOpen(false); }}
+                className="w-full px-4 py-3 text-left hover:bg-surface-container-low transition-colors border-b border-outline-variant/10 flex items-center gap-3"
+              >
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary"><Icon name="link" size={18} /></div>
+                <div>
+                  <div className="text-body-md font-semibold text-gray-800">Share Reg Link</div>
+                  <div className="text-label-sm text-gray-500">Students self-register</div>
+                </div>
+              </button>
+              <button 
+                onClick={() => { setIsImportOpen(true); setIsAddMenuOpen(false); }}
+                className="w-full px-4 py-3 text-left hover:bg-surface-container-low transition-colors flex items-center gap-3"
+              >
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary"><Icon name="upload_file" size={18} /></div>
+                <div>
+                  <div className="text-body-md font-semibold text-gray-800">Import CSV</div>
+                  <div className="text-label-sm text-gray-500">Bulk upload students</div>
+                </div>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Select Controls & Filters */}
@@ -312,6 +424,70 @@ export default function Students() {
           <div className="flex justify-end gap-2 pt-4">
             <button type="button" className="btn-secondary" onClick={() => { setIsAddOpen(false); setAddError(''); setShowAddPassword(false); }}>Cancel</button>
             <button type="submit" className="btn-primary">Add Student</button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Share Registration Link Modal */}
+      <Modal isOpen={isShareLinkOpen} onClose={() => setIsShareLinkOpen(false)} title="Share Registration Link">
+        <div className="space-y-4">
+          <p className="text-body-md text-gray-600">
+            Share this unique link with students. When they use this link to register, they will be automatically added to your school's roster.
+          </p>
+          <div className="p-3 bg-surface-container rounded-lg border border-outline-variant/20 flex items-center gap-3">
+            <input 
+              type="text" 
+              readOnly 
+              value={`${window.location.origin}/${school?.slug}/register`} 
+              className="bg-transparent border-none outline-none flex-1 text-gray-800 font-medium"
+            />
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(`${window.location.origin}/${school?.slug}/register`);
+                toast.success('Copied to clipboard!');
+              }}
+              className="btn-secondary py-1 px-3 text-sm"
+            >
+              Copy
+            </button>
+          </div>
+          <div className="flex justify-end pt-4">
+            <button type="button" className="btn-secondary" onClick={() => setIsShareLinkOpen(false)}>Close</button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Import CSV Modal */}
+      <Modal isOpen={isImportOpen} onClose={() => { setIsImportOpen(false); setImportError(''); setCsvFile(null); }} title="Import Students from CSV">
+        <form onSubmit={handleImportCSV} className="space-y-4">
+          <div className="bg-primary-container/10 p-4 rounded-xl border border-primary-container/20">
+            <h4 className="text-title-sm font-semibold text-primary mb-2">CSV Format Requirements</h4>
+            <p className="text-body-sm text-gray-600 mb-2">Your CSV file must include a header row with exact column names:</p>
+            <code className="text-xs bg-white px-2 py-1 rounded border border-gray-200">name, email, password</code>
+          </div>
+          
+          {importError && (
+            <div className="bg-error/10 text-error p-3 rounded-lg text-sm font-medium">
+              {importError}
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Upload CSV File</label>
+            <input 
+              required 
+              type="file" 
+              accept=".csv"
+              className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-container/10 file:text-primary hover:file:bg-primary-container/20 cursor-pointer border border-gray-200 rounded-lg p-1"
+              onChange={e => setCsvFile(e.target.files[0])}
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4">
+            <button type="button" className="btn-secondary" onClick={() => { setIsImportOpen(false); setImportError(''); setCsvFile(null); }} disabled={importing}>Cancel</button>
+            <button type="submit" className="btn-primary" disabled={importing}>
+              {importing ? 'Importing...' : 'Upload & Import'}
+            </button>
           </div>
         </form>
       </Modal>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link, useParams } from 'react-router-dom';
+import { useNavigate, Link, useParams, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../context/AuthContext';
 import Icon from '../components/common/Icon';
@@ -13,6 +13,8 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [role, setRole] = useState('student'); // 'student' or 'teacher'
+  const [searchParams] = useSearchParams();
+  const querySchoolId = searchParams.get('schoolId');
   const { registerUser } = useAuth();
 
   const [tenantSchool, setTenantSchool] = useState(null);
@@ -22,6 +24,7 @@ export default function Register() {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm();
 
@@ -192,6 +195,7 @@ export default function Register() {
                 <Icon name="business" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
                 <input
                   type="text"
+                  defaultValue={querySchoolId || ''}
                   {...register('schoolId', {
                     required: 'School ID is required to join a school',
                   })}

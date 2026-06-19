@@ -10,7 +10,7 @@ export default function ProtectedRoute({ role, children }) {
   }
 
   if (role && userRole !== role) {
-    const redirectMap = { admin: '/admin/dashboard', teacher: '/teacher/dashboard', student: '/student/dashboard' };
+    const redirectMap = { admin: '/admin/dashboard', teacher: '/teacher/dashboard', student: '/student/dashboard', onboarding: '/onboarding' };
     return <Navigate to={redirectMap[userRole] || '/login'} replace />;
   }
 

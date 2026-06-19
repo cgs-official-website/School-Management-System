@@ -1,61 +1,62 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Loader from './components/common/Loader';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
 
-// Auth pages
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import NotFound from './pages/NotFound';
-import LandingPage from './pages/LandingPage';
-
 // Layout
 import AdminLayout from './components/layout/AdminLayout';
 
+// Auth pages (Lazy loaded for faster initial load)
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const Onboarding = lazy(() => import('./pages/Onboarding'));
+
 // Superadmin pages
-import SuperAdminDashboard from './pages/superadmin/Dashboard';
-import SuperAdminSchools from './pages/superadmin/Schools';
+const SuperAdminDashboard = lazy(() => import('./pages/superadmin/Dashboard'));
+const SuperAdminSchools = lazy(() => import('./pages/superadmin/Schools'));
 
 // Admin pages
-import AdminDashboard from './pages/admin/Dashboard';
-import AdminAttendance from './pages/admin/Attendance';
-import AdminHomework from './pages/admin/Homework';
-import AdminMarks from './pages/admin/Marks';
-import AdminFees from './pages/admin/Fees';
-import AdminLeaves from './pages/admin/Leaves';
-import AdminReports from './pages/admin/Reports';
-import AdminStudents from './pages/admin/Students';
+const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
+const AdminAttendance = lazy(() => import('./pages/admin/Attendance'));
+const AdminHomework = lazy(() => import('./pages/admin/Homework'));
+const AdminMarks = lazy(() => import('./pages/admin/Marks'));
+const AdminFees = lazy(() => import('./pages/admin/Fees'));
+const AdminLeaves = lazy(() => import('./pages/admin/Leaves'));
+const AdminReports = lazy(() => import('./pages/admin/Reports'));
+const AdminStudents = lazy(() => import('./pages/admin/Students'));
 
 // Student pages
-import StudentDashboard from './pages/StudentDashboard';
-import StudentAttendance from './pages/student/Attendance';
-import StudentHomework from './pages/student/Homework';
-import StudentMarks from './pages/student/Marks';
-import StudentFees from './pages/student/Fees';
-import StudentLeaves from './pages/student/Leaves';
+const StudentDashboard = lazy(() => import('./pages/StudentDashboard'));
+const StudentAttendance = lazy(() => import('./pages/student/Attendance'));
+const StudentHomework = lazy(() => import('./pages/student/Homework'));
+const StudentMarks = lazy(() => import('./pages/student/Marks'));
+const StudentFees = lazy(() => import('./pages/student/Fees'));
+const StudentLeaves = lazy(() => import('./pages/student/Leaves'));
 
 // Shared pages
-import Profile from './pages/shared/Profile';
-import Settings from './pages/shared/Settings';
+const Profile = lazy(() => import('./pages/shared/Profile'));
+const Settings = lazy(() => import('./pages/shared/Settings'));
 
 // Teacher pages
-import TeacherDashboard from './pages/TeacherDashboard';
-import TeacherAttendance from './pages/teacher/Attendance';
-import TeacherHomework from './pages/teacher/Homework';
-import TeacherMarks from './pages/teacher/Marks';
-import TeacherLeaves from './pages/teacher/Leaves';
-import TeacherStudents from './pages/teacher/Students';
+const TeacherDashboard = lazy(() => import('./pages/TeacherDashboard'));
+const TeacherAttendance = lazy(() => import('./pages/teacher/Attendance'));
+const TeacherHomework = lazy(() => import('./pages/teacher/Homework'));
+const TeacherMarks = lazy(() => import('./pages/teacher/Marks'));
+const TeacherLeaves = lazy(() => import('./pages/teacher/Leaves'));
+const TeacherStudents = lazy(() => import('./pages/teacher/Students'));
 
 // Admin Teachers page
-import AdminTeachers from './pages/admin/Teachers';
+const AdminTeachers = lazy(() => import('./pages/admin/Teachers'));
 
 function RoleDashboardRedirect() {
   const { role } = useAuth();
-  const redirectMap = { superadmin: '/superadmin/dashboard', admin: '/admin/dashboard', teacher: '/teacher/dashboard', student: '/student/dashboard' };
+  const redirectMap = { superadmin: '/superadmin/dashboard', admin: '/admin/dashboard', teacher: '/teacher/dashboard', student: '/student/dashboard', onboarding: '/onboarding' };
   return <Navigate to={redirectMap[role] || '/login'} replace />;
 }
 
@@ -90,6 +91,7 @@ function App() {
           },
         }}
       />
+      <Suspense fallback={<Loader fullScreen />}>
         <Routes>
           {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
@@ -98,6 +100,7 @@ function App() {
         <Route path="/:schoolSlug/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/onboarding" element={<Onboarding />} />
 
         {/* Superadmin Routes */}
         <Route path="/superadmin" element={
@@ -174,6 +177,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </Suspense>
     </>
   );
 }

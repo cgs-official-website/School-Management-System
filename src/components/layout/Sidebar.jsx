@@ -114,6 +114,11 @@ export default function Sidebar({ collapsed, onToggle }) {
                   <p className="text-[10px] text-on-surface-variant uppercase tracking-widest mt-1 font-bold">
                     {role === 'admin' ? 'Admin Portal' : role === 'teacher' ? 'Teacher Portal' : 'Student Portal'}
                   </p>
+                  <div className="mt-1.5 flex items-center">
+                    <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold whitespace-nowrap overflow-hidden text-ellipsis max-w-full block">
+                      {school?.planName || 'Demo Plan'}
+                    </span>
+                  </div>
                 </div>
               )}
             </div>

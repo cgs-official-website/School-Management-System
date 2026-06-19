@@ -107,7 +107,7 @@ export default function Profile() {
             <Icon name="person" size={64} />
           </div>
           <h2 className="text-title-lg text-on-surface font-semibold capitalize">{profileData.name}</h2>
-          <p className="text-body-md text-on-surface-variant capitalize">{role}</p>
+          <p className="text-body-md text-on-surface-variant capitalize">{role} {school?.name ? `• ${school.name}` : ''}</p>
           <div className="w-full mt-6 space-y-3">
             <button 
               onClick={() => { setIsEditing(true); setIsChangingPassword(false); }}

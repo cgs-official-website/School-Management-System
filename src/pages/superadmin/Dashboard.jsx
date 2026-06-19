@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import StatCard from '../../components/common/StatCard';
 import Icon from '../../components/common/Icon';
@@ -12,11 +12,20 @@ export default function SuperAdminDashboard() {
   useEffect(() => {
     const fetchPlatformStats = async () => {
       try {
-        const schoolsSnap = await getDocs(collection(db, 'schools'));
+        const schoolsQ = query(collection(db, 'schools'), where('status', '==', 'Active'));
+        const schoolsSnap = await getDocs(schoolsQ);
         setSchoolsCount(schoolsSnap.size);
 
+        const activeSchoolIds = schoolsSnap.docs.map(d => d.id);
         const usersSnap = await getDocs(collection(db, 'users'));
-        setTotalUsers(usersSnap.size);
+        let activeUserCount = 0;
+        usersSnap.forEach(d => {
+          const userData = d.data();
+          if (activeSchoolIds.includes(userData.schoolId) || userData.role === 'superadmin') {
+            activeUserCount++;
+          }
+        });
+        setTotalUsers(activeUserCount);
       } catch (err) {
         console.error("Error fetching stats:", err);
       } finally {
@@ -58,7 +67,7 @@ export default function SuperAdminDashboard() {
         />
         <StatCard
           title="Platform Revenue"
-          value="$--"
+          value="₹--"
           subtitle="Coming soon"
           icon="payments"
           color="tertiary"

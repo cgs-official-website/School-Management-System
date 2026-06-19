@@ -5,11 +5,37 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const AuthContext = createContext(null);
+
+const getFriendlyErrorMessage = (error) => {
+  const code = error.code || error.message;
+  if (code.includes('auth/user-not-found') || code.includes('auth/invalid-credential')) {
+    return 'Incorrect email or password. Please try again.';
+  }
+  if (code.includes('auth/wrong-password')) {
+    return 'Incorrect email or password. Please try again.';
+  }
+  if (code.includes('auth/email-already-in-use')) {
+    return 'This email is already registered. Please log in instead.';
+  }
+  if (code.includes('auth/weak-password')) {
+    return 'Password is too weak. Please use a stronger password.';
+  }
+  if (code.includes('auth/network-request-failed')) {
+    return 'Network error. Please check your internet connection.';
+  }
+  if (code.includes('auth/too-many-requests')) {
+    return 'Too many failed login attempts. Please try again later.';
+  }
+  // Fallback
+  return error.message?.replace('Firebase: Error ', '').replace(/\(auth\/.*\)\./, '') || 'An unexpected error occurred. Please try again.';
+};
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -46,12 +72,12 @@ export function AuthProvider({ children }) {
               schoolId: userData.schoolId,
             });
           } else {
-            setRole('student');
+            setRole('onboarding');
             setUser(currentUser);
           }
         } catch (err) {
           console.error("Firestore getDoc error:", err);
-          setRole('student');
+          setRole('onboarding');
           setUser(currentUser);
         }
       } else {
@@ -88,7 +114,7 @@ export function AuthProvider({ children }) {
       // Role fetch is handled in onAuthStateChanged
       return userCredential.user;
     } catch (error) {
-      throw new Error(error.message || 'Login failed');
+      throw new Error(getFriendlyErrorMessage(error));
     }
   };
 
@@ -116,7 +142,87 @@ export function AuthProvider({ children }) {
 
       return user;
     } catch (error) {
-      throw new Error(error.message || 'Registration failed');
+      throw new Error(getFriendlyErrorMessage(error));
+    }
+  };
+
+  const loginWithGoogle = async (isRegistering = false, roleToSet = 'student', schoolId = null, employeeId = null) => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const currentUser = result.user;
+      
+      const docRef = doc(db, 'users', currentUser.uid);
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        if (isRegistering && schoolId) {
+          const userData = {
+            uid: currentUser.uid,
+            email: currentUser.email,
+            name: currentUser.displayName || 'Google User',
+            role: roleToSet,
+            schoolId: schoolId,
+            createdAt: new Date().toISOString()
+          };
+          if (employeeId) userData.employeeId = employeeId;
+          await setDoc(docRef, userData);
+          
+          setRole(roleToSet);
+          const schoolRef = doc(db, 'schools', schoolId);
+          const schoolSnap = await getDoc(schoolRef);
+          if (schoolSnap.exists()) {
+            setSchool({ id: schoolSnap.id, ...schoolSnap.data() });
+          }
+          setUser({
+            ...currentUser,
+            name: userData.name,
+            role: userData.role,
+            schoolId: userData.schoolId,
+          });
+        }
+        // If not registering (i.e. just clicking login), we do nothing here and let onAuthStateChanged set role to 'onboarding'
+      }
+      return currentUser;
+    } catch (error) {
+      if (error.code === 'auth/popup-closed-by-user') {
+         throw new Error('Google sign-in was cancelled.');
+      }
+      throw new Error(error.message || getFriendlyErrorMessage(error));
+    }
+  };
+
+  const completeOnboarding = async (schoolId, roleToSet, employeeId = null) => {
+    try {
+      if (!user) throw new Error("No authenticated user found.");
+      
+      const userData = {
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName || 'Google User',
+        role: roleToSet,
+        schoolId: schoolId,
+        createdAt: new Date().toISOString()
+      };
+      if (employeeId) userData.employeeId = employeeId;
+      
+      await setDoc(doc(db, 'users', user.uid), userData);
+      
+      setRole(roleToSet);
+      const schoolRef = doc(db, 'schools', schoolId);
+      const schoolSnap = await getDoc(schoolRef);
+      if (schoolSnap.exists()) {
+        setSchool({ id: schoolSnap.id, ...schoolSnap.data() });
+      }
+      setUser({
+        ...user,
+        name: userData.name,
+        role: userData.role,
+        schoolId: userData.schoolId,
+      });
+      
+    } catch (error) {
+      throw new Error(error.message || "Failed to complete onboarding.");
     }
   };
 
@@ -151,7 +257,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, role, school, login, registerUser, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, role, school, login, registerUser, loginWithGoogle, completeOnboarding, logout, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

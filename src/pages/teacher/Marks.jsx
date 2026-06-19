@@ -45,10 +45,6 @@ export default function Marks() {
     cachedMax.current[key] = { ...maxMarksInput };
   }
 
-  useEffect(() => {
-    fetchData();
-  }, [selectedSubject, selectedExam, selectedTerm]);
-
   const fetchData = async () => {
     if (!school?.id) return;
     setLoading(true);
@@ -102,6 +98,12 @@ export default function Marks() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, [selectedSubject, selectedExam, selectedTerm]);
+
+
 
   const handleMarkChange = (studentId, value) => {
     setMarksInput({

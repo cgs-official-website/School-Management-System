@@ -3,6 +3,7 @@ import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'fire
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../context/AuthContext';
 import Icon from '../../components/common/Icon';
+import toast from 'react-hot-toast';
 
 const statusColors = { 
   Pending: 'bg-amber-100 text-amber-700 border-amber-200', 
@@ -86,7 +87,7 @@ export default function StudentLeaves() {
       fetchLeaveBalances();
     } catch (err) {
       console.error('Error submitting leave:', err);
-      alert(err.message);
+      toast.error(err.message);
     }
   };
 
