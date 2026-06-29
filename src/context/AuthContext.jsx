@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { auth, db, secondaryAuth } from '../lib/firebase';
 import {
@@ -9,7 +9,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup
 } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 
 const AuthContext = createContext(null);
 
@@ -33,7 +33,6 @@ const getFriendlyErrorMessage = (error) => {
   if (code.includes('auth/too-many-requests')) {
     return 'Too many failed login attempts. Please try again later.';
   }
-  // Fallback
   return error.message?.replace('Firebase: Error ', '').replace(/\(auth\/.*\)\./, '') || 'An unexpected error occurred. Please try again.';
 };
 
@@ -44,6 +43,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let schoolUnsub = null;
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         try {
@@ -55,40 +55,54 @@ export function AuthProvider({ children }) {
             const userData = docSnap.data();
             setRole(userData.role);
             
-            let schoolData = null;
-            if (userData.schoolId) {
-              const schoolRef = doc(db, 'schools', userData.schoolId);
-              const schoolSnap = await getDoc(schoolRef);
-              if (schoolSnap.exists()) {
-                schoolData = { id: schoolSnap.id, ...schoolSnap.data() };
-              }
-            }
-            setSchool(schoolData);
-
             setUser({
               ...currentUser,
               name: userData.name,
               role: userData.role,
               schoolId: userData.schoolId,
             });
+
+            if (userData.schoolId) {
+              if (schoolUnsub) schoolUnsub();
+              schoolUnsub = onSnapshot(doc(db, 'schools', userData.schoolId), (schoolSnap) => {
+                if (schoolSnap.exists()) {
+                  setSchool({ id: schoolSnap.id, ...schoolSnap.data() });
+                } else {
+                  setSchool(null);
+                }
+              }, (err) => {
+                console.error("School real-time listener error:", err);
+              });
+            } else {
+              setSchool(null);
+            }
           } else {
             setRole('onboarding');
             setUser(currentUser);
+            setSchool(null);
           }
         } catch (err) {
-          console.error("Firestore getDoc error:", err);
+          console.error("Firestore setup error:", err);
           setRole('onboarding');
           setUser(currentUser);
+          setSchool(null);
         }
       } else {
         setUser(null);
         setRole(null);
         setSchool(null);
+        if (schoolUnsub) {
+          schoolUnsub();
+          schoolUnsub = null;
+        }
       }
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      if (schoolUnsub) schoolUnsub();
+    };
   }, []);
 
   const login = async ({ email, password }) => {
@@ -111,7 +125,6 @@ export function AuthProvider({ children }) {
       }
 
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // Role fetch is handled in onAuthStateChanged
       return userCredential.user;
     } catch (error) {
       throw new Error(getFriendlyErrorMessage(error));
@@ -181,7 +194,6 @@ export function AuthProvider({ children }) {
             schoolId: userData.schoolId,
           });
         }
-        // If not registering (i.e. just clicking login), we do nothing here and let onAuthStateChanged set role to 'onboarding'
       }
       return currentUser;
     } catch (error) {

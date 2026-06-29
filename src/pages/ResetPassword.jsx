@@ -6,56 +6,76 @@ import Icon from '../components/common/Icon';
 export default function ResetPassword() {
   const { token } = useParams();
   return (
-    <div className="h-screen flex overflow-hidden">
-      {/* Left Side - Branding */}
-      <div className="hidden lg:flex w-1/2 bg-primary relative items-center justify-center overflow-hidden shrink-0">
-        <div className="absolute inset-0 bg-primary-900/40 z-10" />
+    <div className="min-h-screen flex bg-stone-950 font-sans selection:bg-amber-500/20 selection:text-amber-500">
+      {/* Left Side - Premium Branding */}
+      <div className="hidden lg:flex w-1/2 bg-stone-900 relative items-center justify-center overflow-hidden shrink-0">
+        <div className="absolute inset-0 bg-gradient-to-tr from-stone-950 via-stone-900/80 to-stone-950/40 z-10" />
         <motion.img 
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 15, ease: "linear", repeat: Infinity, repeatType: "reverse" }}
           src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070" 
           alt="Education Background" 
-          className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay" 
+          className="absolute inset-0 w-full h-full object-cover opacity-25 mix-blend-overlay" 
         />
-        <div className="relative z-20 text-center px-12 flex flex-col items-center">
+        <div className="relative z-20 text-center px-12 flex flex-col items-center max-w-lg">
           <motion.div 
             animate={{ y: [-10, 10, -10] }} 
             transition={{ duration: 4, ease: "easeInOut", repeat: Infinity }}
-            className="w-32 h-32 flex items-center justify-center shrink-0 mb-8"
+            className="w-20 h-20 flex items-center justify-center shrink-0 mb-8 bg-amber-500/10 border border-amber-500/25 rounded-3xl p-4 shadow-[0_0_50px_-12px_rgba(245,158,11,0.3)]"
           >
-            <img src="/logo.png" alt="Zuna Logo" className="w-full h-full object-contain drop-shadow-2xl" />
+            <img src="/logo.png" alt="Zuna Logo" className="w-full h-full object-contain filter drop-shadow-md" />
           </motion.div>
-          <h1 className="text-4xl font-extrabold text-white mb-4 tracking-tight">Secure Your Account</h1>
-          <p className="text-primary-100 text-lg max-w-md leading-relaxed">
+          <h1 className="text-3xl font-extrabold text-white mb-4 tracking-tight">Secure Your Account</h1>
+          <p className="text-stone-400 text-sm leading-relaxed">
             Get back to managing your educational institution with confidence.
           </p>
         </div>
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 h-full overflow-y-auto flex items-center justify-center p-8 bg-background">
-        <div className="w-full max-w-md animate-fade-in py-12">
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="w-12 h-12 flex items-center justify-center shrink-0">
-            <img src="/logo.png" alt="Zuna Logo" className="w-full h-full object-contain drop-shadow-sm" />
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 overflow-y-auto">
+        <div className="w-full max-w-md space-y-8 py-10">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-extrabold text-white tracking-tight">Set New Password</h2>
+            <p className="text-sm text-stone-400 font-medium">Please enter your new password below.</p>
           </div>
-          <h1 className="text-headline-md text-on-surface font-bold">Zuna</h1>
-        </div>
-        <h2 className="text-title-lg text-on-surface mb-2">Set New Password</h2>
-        <p className="text-body-md text-on-surface-variant mb-6">Please enter your new password below.</p>
-        <form className="space-y-4">
-          <div>
-            <label className="block text-body-md text-on-surface font-medium mb-2">New Password</label>
-            <input type="password" placeholder="Enter new password" className="input-field" />
+
+          <form className="space-y-5">
+            <div>
+              <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">New Password</label>
+              <div className="relative">
+                <Icon name="lock" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" />
+                <input 
+                  type="password" 
+                  placeholder="Enter new password" 
+                  className="w-full px-4 py-3.5 pl-12 rounded-2xl border border-stone-800 bg-stone-900/30 text-white placeholder-stone-600 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 text-sm transition-all shadow-inner" 
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Confirm Password</label>
+              <div className="relative">
+                <Icon name="lock" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" />
+                <input 
+                  type="password" 
+                  placeholder="Confirm new password" 
+                  className="w-full px-4 py-3.5 pl-12 rounded-2xl border border-stone-800 bg-stone-900/30 text-white placeholder-stone-600 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 text-sm transition-all shadow-inner" 
+                />
+              </div>
+            </div>
+            <button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3.5 px-6 rounded-2xl font-bold shadow-[0_4px_20px_-4px_rgba(245,158,11,0.25)] hover:shadow-[0_6px_24px_-4px_rgba(245,158,11,0.4)] transition-all transform hover:-translate-y-0.5 active:scale-95 text-sm flex items-center justify-center gap-2"
+            >
+              Update Password
+            </button>
+          </form>
+          <div className="text-center">
+            <Link to="/login" className="text-xs text-amber-500 font-bold hover:text-amber-400 hover:underline">
+              Back to Login
+            </Link>
           </div>
-          <div>
-            <label className="block text-body-md text-on-surface font-medium mb-2">Confirm Password</label>
-            <input type="password" placeholder="Confirm new password" className="input-field" />
-          </div>
-          <button type="submit" className="btn-primary w-full justify-center py-3">Update Password</button>
-        </form>
-        <Link to="/login" className="block text-center text-body-md text-primary-container hover:text-primary mt-4 font-medium">Back to Login</Link>
         </div>
       </div>
     </div>

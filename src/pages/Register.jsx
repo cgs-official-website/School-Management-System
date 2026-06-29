@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../context/AuthContext';
 import Icon from '../components/common/Icon';
 import { motion } from 'framer-motion';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 export default function Register() {
@@ -24,7 +24,6 @@ export default function Register() {
   const {
     register,
     handleSubmit,
-    getValues,
     formState: { errors, isSubmitting },
   } = useForm();
 
@@ -51,10 +50,8 @@ export default function Register() {
 
   const onSubmit = async (formData) => {
     setSubmitError('');
-
     try {
       const finalSchoolId = tenantSchool ? tenantSchool.id : formData.schoolId;
-
       await registerUser({
         email: formData.email,
         password: formData.password,
@@ -72,206 +69,188 @@ export default function Register() {
   };
 
   return (
-    <div className="h-screen flex overflow-hidden">
+    <div className="min-h-screen flex bg-stone-950 font-sans selection:bg-amber-500/20 selection:text-amber-500">
       {/* Left Side - Branding */}
-      <div className="hidden lg:flex w-1/2 bg-primary relative items-center justify-center overflow-hidden shrink-0">
-        <div className="absolute inset-0 bg-primary-900/40 z-10" />
+      <div className="hidden lg:flex w-1/2 bg-stone-900 relative items-center justify-center overflow-hidden shrink-0">
+        <div className="absolute inset-0 bg-gradient-to-tr from-stone-950 via-stone-900/80 to-stone-950/40 z-10" />
         <motion.img 
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 15, ease: "linear", repeat: Infinity, repeatType: "reverse" }}
           src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070" 
-          alt="Education Background" 
-          className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay" 
+          alt="Branding Campus" 
+          className="absolute inset-0 w-full h-full object-cover opacity-25 mix-blend-overlay" 
         />
-        <div className="relative z-20 text-center px-12 flex flex-col items-center">
+        <div className="relative z-20 text-center px-12 flex flex-col items-center max-w-lg">
           <motion.div 
-            animate={{ y: [-10, 10, -10] }} 
+            animate={{ y: [-8, 8, -8] }} 
             transition={{ duration: 4, ease: "easeInOut", repeat: Infinity }}
-            className="w-32 h-32 flex items-center justify-center shrink-0 mb-8"
+            className="w-20 h-20 flex items-center justify-center shrink-0 mb-8 bg-amber-500/10 border border-amber-500/25 rounded-3xl p-4 shadow-[0_0_50px_-12px_rgba(245,158,11,0.3)]"
           >
-            <img src={tenantSchool?.schoolLogo || "/logo.png"} alt="Logo" className="w-full h-full object-contain drop-shadow-2xl" />
+            <img src={tenantSchool?.schoolLogo || "/logo.png"} alt="Logo" className="w-full h-full object-contain filter drop-shadow-md" />
           </motion.div>
-          <h1 className="text-4xl font-extrabold text-white mb-4 tracking-tight">
+          <h1 className="text-3xl font-extrabold text-white mb-4 tracking-tight leading-tight">
             {tenantSchool ? `Join ${tenantSchool.name}` : 'Join Zuna'}
           </h1>
-          <p className="text-primary-100 text-lg max-w-md leading-relaxed">
+          <p className="text-stone-400 text-sm leading-relaxed">
             {tenantSchool?.details || 'Create an account and start managing your educational institution with confidence.'}
           </p>
         </div>
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 h-full overflow-y-auto flex justify-center p-8 bg-background">
-        <div className="w-full max-w-md animate-fade-in py-12 my-auto">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 overflow-y-auto animate-fade-in">
+        <div className="w-full max-w-md space-y-8 py-10">
           {tenantError && (
-            <div className="bg-error/10 text-error p-3 rounded-lg mb-6 text-sm text-center">
+            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-xs font-semibold text-center">
               {tenantError}
             </div>
           )}
-          <div className="lg:hidden flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 flex items-center justify-center shrink-0">
-              <img src={tenantSchool?.schoolLogo || "/logo.png"} alt="Logo" className="w-full h-full object-contain drop-shadow-sm" />
+
+          <div className="space-y-2">
+            <h2 className="text-3xl font-extrabold text-white tracking-tight">Create Account</h2>
+            <p className="text-sm text-stone-400 font-medium">Fill in details to setup your user portal.</p>
+          </div>
+
+          {submitError && (
+            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-xs font-semibold">
+              {submitError}
             </div>
-            <h1 className="text-headline-md text-on-surface font-bold truncate">
-              {tenantSchool ? tenantSchool.name : 'Zuna'}
-            </h1>
-          </div>
-        <h2 className="text-title-lg text-on-surface mb-2">Registration</h2>
-        <p className="text-body-md text-on-surface-variant mb-6">Create an account to join the platform.</p>
+          )}
 
-        {submitError && (
-          <div className="bg-error/10 text-error p-3 rounded-lg mb-6 text-sm">
-            {submitError}
-          </div>
-        )}
-
-        <div className="flex p-1 bg-surface-variant rounded-lg mb-6">
-          <button
-            type="button"
-            onClick={() => setRole('student')}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${role === 'student' ? 'bg-white text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
-          >
-            Student
-          </button>
-          <button
-            type="button"
-            onClick={() => setRole('teacher')}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${role === 'teacher' ? 'bg-white text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
-          >
-            Teacher
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 mb-6">
-          <div>
-            <label className="block text-body-md text-on-surface font-medium mb-2">
-              Full Name
-            </label>
-            <div className="relative">
-              <Icon name="person" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-              <input
-                type="text"
-                {...register('name', {
-                  required: 'Name is required',
-                  minLength: { value: 2, message: 'Name must be at least 2 characters' },
-                })}
-                placeholder="John Doe"
-                className={`input-field pl-12 ${errors.name ? 'border-error' : ''}`}
-              />
-            </div>
-            {errors.name && (
-              <p className="text-error text-sm mt-1">{errors.name.message}</p>
-            )}
+          <div className="grid grid-cols-2 gap-3 p-1 bg-stone-900/50 border border-stone-800 rounded-2xl">
+            <button
+              type="button"
+              onClick={() => setRole('student')}
+              className={`py-2 text-xs font-bold rounded-xl transition-all ${
+                role === 'student' ? 'bg-amber-500 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              Student
+            </button>
+            <button
+              type="button"
+              onClick={() => setRole('teacher')}
+              className={`py-2 text-xs font-bold rounded-xl transition-all ${
+                role === 'teacher' ? 'bg-amber-500 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              Teacher
+            </button>
           </div>
 
-          <div>
-            <label className="block text-body-md text-on-surface font-medium mb-2">
-              Email Address
-            </label>
-            <div className="relative">
-              <Icon name="mail" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-              <input
-                type="email"
-                {...register('email', {
-                  required: 'Email is required',
-                  pattern: { value: /^\S+@\S+\.\S+$/, message: 'Please enter a valid email address' },
-                })}
-                placeholder="Enter email id"
-                className={`input-field pl-12 ${errors.email ? 'border-error' : ''}`}
-              />
-            </div>
-            {errors.email && (
-              <p className="text-error text-sm mt-1">{errors.email.message}</p>
-            )}
-          </div>
-
-          {!tenantSchool && (
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>
-              <label className="block text-body-md text-on-surface font-medium mb-2">
-                School ID
-              </label>
+              <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Full Name</label>
               <div className="relative">
-                <Icon name="business" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                <Icon name="person" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" />
                 <input
                   type="text"
-                  defaultValue={querySchoolId || ''}
-                  {...register('schoolId', {
-                    required: 'School ID is required to join a school',
-                  })}
-                  placeholder="e.g. ZUNA0001"
-                  className={`input-field pl-12 ${errors.schoolId ? 'border-error' : ''}`}
+                  required
+                  {...register('name', { required: 'Name is required' })}
+                  placeholder="Enter full name"
+                  className="w-full px-4 py-3.5 pl-12 rounded-2xl border border-stone-800 bg-stone-900/30 text-white placeholder-stone-600 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 text-sm transition-all shadow-inner"
                 />
               </div>
-              {errors.schoolId && (
-                <p className="text-error text-sm mt-1">{errors.schoolId.message}</p>
-              )}
-              <p className="text-xs text-on-surface-variant mt-1">Ask your school administrator for your School ID.</p>
+              {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>}
             </div>
-          )}
 
-          {role === 'teacher' && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
-              <label className="block text-body-md text-on-surface font-medium mb-2">
-                Employee ID
-              </label>
+            <div>
+              <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Email Address</label>
               <div className="relative">
-                <Icon name="badge" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                <Icon name="mail" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" />
                 <input
-                  type="text"
-                  {...register('employeeId', {
-                    required: 'Employee ID is required for teachers',
+                  type="email"
+                  required
+                  {...register('email', {
+                    required: 'Email is required',
+                    pattern: { value: /^\S+@\S+\.\S+$/, message: 'Please enter a valid email address' },
                   })}
-                  placeholder="e.g. EMP-12345"
-                  className={`input-field pl-12 ${errors.employeeId ? 'border-error' : ''}`}
+                  placeholder="name@school.edu"
+                  className="w-full px-4 py-3.5 pl-12 rounded-2xl border border-stone-800 bg-stone-900/30 text-white placeholder-stone-600 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 text-sm transition-all shadow-inner"
                 />
               </div>
-              {errors.employeeId && (
-                <p className="text-error text-sm mt-1">{errors.employeeId.message}</p>
-              )}
-            </motion.div>
-          )}
-
-          <div>
-            <label className="block text-body-md text-on-surface font-medium mb-2">
-              Password
-            </label>
-            <div className="relative">
-              <Icon name="settings" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                {...register('password', {
-                  required: 'Password is required',
-                  minLength: { value: 6, message: 'Password must be at least 6 characters' },
-                  pattern: {
-                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/,
-                    message: 'Must include uppercase, lowercase, number, and special character',
-                  },
-                })}
-                placeholder="Create a password"
-                className={`input-field pl-12 pr-12 ${errors.password ? 'border-error' : ''}`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
-              >
-                <Icon name={showPassword ? 'visibility_off' : 'visibility'} size={20} />
-              </button>
+              {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>}
             </div>
-            {errors.password && (
-              <p className="text-error text-sm mt-1">{errors.password.message}</p>
+
+            <div>
+              <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Password</label>
+              <div className="relative">
+                <Icon name="lock" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  {...register('password', {
+                    required: 'Password is required',
+                    minLength: { value: 6, message: 'Password must be at least 6 characters' },
+                  })}
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3.5 pl-12 pr-12 rounded-2xl border border-stone-800 bg-stone-900/30 text-white placeholder-stone-600 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 text-sm transition-all shadow-inner"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-300 transition-colors"
+                >
+                  <Icon name={showPassword ? 'visibility_off' : 'visibility'} size={18} />
+                </button>
+              </div>
+              {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>}
+            </div>
+
+            {!tenantSchool && (
+              <div>
+                <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">School ID</label>
+                <div className="relative">
+                  <Icon name="business" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" />
+                  <input
+                    type="text"
+                    required
+                    {...register('schoolId', { required: 'School ID is required' })}
+                    placeholder="e.g. ZUNA0001"
+                    className="w-full px-4 py-3.5 pl-12 rounded-2xl border border-stone-800 bg-stone-900/30 text-white placeholder-stone-600 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 text-sm transition-all shadow-inner"
+                  />
+                </div>
+                {errors.schoolId && <p className="text-red-400 text-xs mt-1">{errors.schoolId.message}</p>}
+              </div>
             )}
-          </div>
 
-          <button type="submit" disabled={isSubmitting} className="btn-primary w-full justify-center py-3 text-body-lg">
-            {isSubmitting ? 'Registering...' : 'Sign Up'}
-          </button>
-        </form>
+            {role === 'teacher' && (
+              <div>
+                <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Employee ID</label>
+                <div className="relative">
+                  <Icon name="badge" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" />
+                  <input
+                    type="text"
+                    required
+                    {...register('employeeId', { required: 'Employee ID is required' })}
+                    placeholder="e.g. EMP-12345"
+                    className="w-full px-4 py-3.5 pl-12 rounded-2xl border border-stone-800 bg-stone-900/30 text-white placeholder-stone-600 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 text-sm transition-all shadow-inner"
+                  />
+                </div>
+                {errors.employeeId && <p className="text-red-400 text-xs mt-1">{errors.employeeId.message}</p>}
+              </div>
+            )}
 
-          <p className="text-center text-body-md text-on-surface-variant mt-6">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3.5 px-6 rounded-2xl font-bold shadow-[0_4px_20px_-4px_rgba(245,158,11,0.25)] hover:shadow-[0_6px_24px_-4px_rgba(245,158,11,0.4)] transition-all transform hover:-translate-y-0.5 active:scale-95 text-sm flex items-center justify-center gap-2"
+            >
+              {isSubmitting ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              ) : (
+                'Create Account'
+              )}
+            </button>
+          </form>
+
+          <p className="text-center text-xs text-stone-500 font-medium">
             Already have an account?{' '}
-            <Link to={schoolSlug ? `/${schoolSlug}/login` : "/login"} className="text-primary-container hover:text-primary font-medium transition-colors">
+            <Link 
+              to={schoolSlug ? `/${schoolSlug}/login` : "/login"} 
+              className="text-amber-500 font-bold hover:text-amber-400 hover:underline"
+            >
               Sign In
             </Link>
           </p>

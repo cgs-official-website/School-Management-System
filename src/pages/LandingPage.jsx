@@ -216,6 +216,13 @@ const LandingPage = () => {
               <button onClick={toggleDarkMode} className="p-2 rounded-full hover:bg-surface-variant dark:hover:bg-slate-800 text-on-surface-variant dark:text-slate-300 transition-colors">
                 {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
+
+              <Link 
+                to="/register-school" 
+                className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md font-bold text-sm shadow-sm transition-colors whitespace-nowrap"
+              >
+                Register School
+              </Link>
               
               {/* Students Dropdown */}
               <div className="relative">
@@ -291,6 +298,7 @@ const LandingPage = () => {
         {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
           <div className="md:hidden bg-white dark:bg-slate-900 border-t border-surface-variant dark:border-slate-800 px-4 pt-2 pb-4 space-y-3 shadow-lg">
+            <Link to="/register-school" className="block px-3 py-2 text-amber-500 font-bold" onClick={() => setIsMenuOpen(false)}>Register School</Link>
             <a href="#features" className="block px-3 py-2 text-on-surface dark:text-slate-200 font-medium" onClick={() => setIsMenuOpen(false)}>Features</a>
             <a href="#pricing" className="block px-3 py-2 text-on-surface dark:text-slate-200 font-medium" onClick={() => setIsMenuOpen(false)}>Pricing</a>
             <Link to="/login" className="block px-3 py-2 text-on-surface dark:text-slate-200 font-medium" onClick={() => setIsMenuOpen(false)}>Login as Student</Link>
@@ -368,8 +376,8 @@ const LandingPage = () => {
             
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link to="/register" className="w-full sm:w-auto bg-primary hover:bg-primary-600 text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-xl shadow-primary/40 flex items-center justify-center space-x-2 group">
-                  <span>Start your free demo</span>
+                <Link to="/register-school" className="w-full sm:w-auto bg-primary hover:bg-primary-600 text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-xl shadow-primary/40 flex items-center justify-center space-x-2 group">
+                  <span>Get Started (Register School)</span>
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </motion.div>
@@ -481,7 +489,7 @@ const LandingPage = () => {
                   </button>
                 ) : (
                   <Link 
-                    to="/register" 
+                    to="/register-school" 
                     className={`block w-full py-3 px-6 rounded-full text-center font-bold transition-all ${
                       plan.popular 
                         ? 'bg-primary hover:bg-primary-600 text-white shadow-md shadow-primary/30' 

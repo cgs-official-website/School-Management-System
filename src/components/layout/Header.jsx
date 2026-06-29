@@ -236,8 +236,8 @@ export default function Header({ onMenuToggle, title }) {
 
             {/* User Avatar */}
             <div className="flex items-center gap-3 pl-3 border-l border-outline-variant/30">
-              <div className="w-9 h-9 rounded-full bg-primary-container/20 flex items-center justify-center">
-                <span className="text-label-md text-primary-container font-semibold">
+              <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center">
+                <span className="text-label-md text-amber-700 font-semibold">
                   {(localStorage.getItem('edutrack_name') || 'Student User')
                     .split(' ')
                     .map(n => n[0])

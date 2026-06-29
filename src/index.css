@@ -30,112 +30,112 @@
 }
 
 @layer components {
-  /* Futuristic Cards */
+  /* Premium Cards */
   .stat-card {
-    @apply bg-white/60 backdrop-blur-xl rounded-2xl p-6 shadow-card border border-white/50 
-           transition-all duration-500 hover:shadow-card-hover hover:-translate-y-1 hover:bg-white/80 relative overflow-hidden;
+    @apply bg-white rounded-2xl p-6 border border-stone-200/50 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03),_0_2px_4px_-2px_rgba(0,0,0,0.02)]
+           transition-all duration-300 hover:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 relative overflow-hidden;
   }
   
   .stat-card::before {
     content: '';
-    @apply absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 transition-opacity duration-500 pointer-events-none;
+    @apply absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 transition-opacity duration-300 pointer-events-none;
   }
   .stat-card:hover::before {
     @apply opacity-100;
   }
 
   .card {
-    @apply bg-white/70 backdrop-blur-2xl rounded-2xl shadow-card border border-white/60 
+    @apply bg-white border border-stone-200/60 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)] 
            transition-all duration-300 relative overflow-hidden;
   }
 
   .card-hover {
-    @apply hover:shadow-card-hover hover:-translate-y-1 hover:bg-white/90;
+    @apply hover:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.06)] hover:-translate-y-0.5;
   }
 
-  /* Futuristic Typography */
+  /* Professional Typography */
   .page-header {
-    @apply text-headline-lg text-slate-900 font-extrabold tracking-tight;
+    @apply text-2xl text-stone-900 font-extrabold tracking-tight;
   }
 
   .page-subtitle {
-    @apply text-body-lg text-slate-500 mt-1 font-medium;
+    @apply text-sm text-stone-500 mt-1 font-medium;
   }
 
   /* Modern Sidebars */
   .sidebar-link {
-    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 font-medium
-           transition-all duration-300 hover:bg-white/50 hover:shadow-sm hover:text-slate-900 relative overflow-hidden;
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-stone-600 font-medium
+           transition-all duration-200 hover:bg-stone-50 hover:text-stone-900 relative overflow-hidden;
   }
 
   .sidebar-link-active {
-    @apply bg-gradient-to-br from-amber-500 to-amber-400 text-white font-bold shadow-[0_0_20px_-5px_rgba(245,158,11,0.4)] border-none;
+    @apply bg-amber-500 text-white font-bold shadow-[0_4px_12px_-2px_rgba(245,158,11,0.3)] border-none;
   }
 
-  /* Sleek Data Tables */
+  /* Premium Data Tables */
   .data-table {
-    @apply w-full border-separate border-spacing-y-2;
+    @apply w-full border-collapse;
   }
 
   .data-table th {
-    @apply text-left text-xs text-slate-500 uppercase tracking-widest 
-           py-4 px-5 bg-transparent border-b border-slate-200/50 font-bold;
+    @apply text-left text-xs text-stone-500 uppercase tracking-wider 
+           py-3.5 px-5 bg-stone-50/50 border-b border-stone-200/60 font-bold;
   }
 
   .data-table td {
-    @apply py-4 px-5 text-sm text-slate-700 bg-white/40 backdrop-blur-md border-y border-white/40 first:border-l first:rounded-l-xl last:border-r last:rounded-r-xl transition-colors duration-200;
+    @apply py-3.5 px-5 text-sm text-stone-700 bg-transparent border-b border-stone-100 transition-colors duration-150;
   }
 
   .data-table tr:hover td {
-    @apply bg-white/80 shadow-sm transform scale-[1.002];
+    @apply bg-stone-50/40;
   }
 
   /* Premium Chips */
   .chip {
-    @apply inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border;
   }
 
   .chip-success {
-    @apply bg-emerald-50/80 border-emerald-200 text-emerald-700 shadow-sm;
+    @apply bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm;
   }
 
   .chip-warning {
-    @apply bg-amber-50/80 border-amber-200 text-amber-700 shadow-sm;
+    @apply bg-amber-50 border-amber-200 text-amber-700 shadow-sm;
   }
 
   .chip-danger {
-    @apply bg-rose-50/80 border-rose-200 text-rose-700 shadow-sm;
+    @apply bg-rose-50 border-rose-200 text-rose-700 shadow-sm;
   }
 
   .chip-info {
-    @apply bg-sky-50/80 border-sky-200 text-sky-700 shadow-sm;
+    @apply bg-sky-50 border-sky-200 text-sky-700 shadow-sm;
   }
 
-  /* Futuristic Buttons */
+  /* Premium Buttons */
   .btn-primary {
-    @apply bg-gradient-to-br from-amber-500 to-amber-400 text-white px-6 py-2.5 rounded-xl font-bold shadow-[0_0_20px_-5px_rgba(245,158,11,0.4)]
-           transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_25px_-5px_rgba(245,158,11,0.6)]
-           active:scale-95 inline-flex items-center justify-center gap-2 relative overflow-hidden border border-white/20;
+    @apply bg-gradient-to-r from-amber-500 to-amber-500 text-white px-5 py-2.5 rounded-xl font-bold shadow-[0_4px_12px_-2px_rgba(245,158,11,0.25)]
+           transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_16px_-2px_rgba(245,158,11,0.35)]
+           active:scale-95 inline-flex items-center justify-center gap-2 relative overflow-hidden border border-amber-500/10;
   }
 
   .btn-secondary {
-    @apply bg-white/60 backdrop-blur-md border border-slate-200 text-slate-700 px-6 py-2.5 rounded-xl font-bold shadow-sm
-           transition-all duration-300 hover:bg-white hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5
+    @apply bg-white border border-stone-200 text-stone-700 px-5 py-2.5 rounded-xl font-bold shadow-sm
+           transition-all duration-200 hover:bg-stone-50 hover:shadow-md hover:border-stone-300 hover:-translate-y-0.5
            active:scale-95 inline-flex items-center justify-center gap-2;
   }
 
   .btn-ghost {
-    @apply text-slate-500 px-4 py-2 rounded-xl font-bold 
-           transition-all duration-300 hover:bg-slate-100/50 hover:text-slate-800
+    @apply text-stone-500 px-4 py-2 rounded-xl font-bold 
+           transition-all duration-200 hover:bg-stone-50 hover:text-stone-800
            active:scale-95 inline-flex items-center justify-center gap-2;
   }
 
   /* Smart Inputs */
   .input-field {
-    @apply w-full px-4 py-3 rounded-xl border border-slate-200/80 bg-white/60 backdrop-blur-md
-           text-sm text-slate-800 placeholder:text-slate-400 font-medium
-           focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-400/20 focus:bg-white
-           transition-all duration-300 shadow-sm hover:border-slate-300;
+    @apply w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white
+           text-sm text-stone-800 placeholder:text-stone-400 font-medium
+           focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10
+           transition-all duration-200 shadow-sm hover:border-stone-300;
   }
 }
 
